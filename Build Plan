@@ -1,0 +1,32 @@
+Starter Project: #9 TV B Gone
+Main Project: #110 Voice Controlled Robot
+
+
+Major Steps to complete the project:
+1. Material Acquisition 
+	
+2. The H-Bridge L293D
+Connect motors to H-Bridge
+
+3. Moving the Robot Around
+Coding for movement. Make sure the code works
+
+4. Connect NodeMCU to WiFi 
+Download code from github
+
+5. Finish code 
+Integrate code with the robot. Use personal hotspot.
+
+
+6. Develop android app 
+Code basic functions
+Make buttons 
+Voice recognition
+
+7. Assembling Robot Body
+ 
+
+Potential Modifications:
+1. Blow it up
+
+2. Make it fly
