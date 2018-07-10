@@ -12,10 +12,8 @@ String command="";
 #include <ESP8266WiFi.h>
 WiFiClient client;
 WiFiServer server(80);
-//const char* ssid = "BlueStamp@Gateway";
-//const char* password = "BSE-dev1ces-801";
 const char* ssid = "iPhone";
-const char* password = "carbon12";
+const char* password = "not shown here for privacy reasons";
 //const char* host = "wifitest.adafruit.com";
 
 void setup() {
