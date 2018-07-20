@@ -1,5 +1,9 @@
 //#include<Windows.h>
 
+#include <Adafruit_NeoPixel.h>
+
+      #define PIN 4
+
 int rightMotor2;
 int rightMotor1;
 int leftMotor2;
@@ -9,11 +13,15 @@ int leftMotor1;
 //int buttonPin = 16;//D0
 String command="";
 
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(2, PIN, NEO_GRB + NEO_KHZ800);
+
 #include <ESP8266WiFi.h>
 WiFiClient client;
 WiFiServer server(80);
-const char* ssid = "Put your Wifi ssid here";
-const char* password = "put your wifi password here";
+//const char* ssid = "BlueStamp@Gateway";
+//const char* password = "BSE-dev1ces-801";
+const char* ssid = "your ssid";
+const char* password = "your password";
 //const char* host = "wifitest.adafruit.com";
 
 void setup() {
@@ -42,7 +50,13 @@ void setup() {
   digitalWrite(leftMotor2,LOW);
   digitalWrite(rightMotor1,LOW);
   digitalWrite(rightMotor2,LOW);
-      
+
+  strip.begin();
+  //strip.setPixelColor(0,0,0,0);
+  //strip.setPixelColor(0,0,0,0);
+  strip.show(); // Initialize all pixels to 'off'
+  //strip.setBrightness(32);
+  
 //  while (digitalRead(buttonPin))  // Wait for button to be pressed to move on 
   //{  
   //}
@@ -65,38 +79,82 @@ void loop() {
   
   if(command == "forward")
     {
+      strip.setPixelColor(0,255,0,0);//first LED
+      strip.show();
+      strip.setPixelColor(1,255,0,0);//second LED
+      strip.show();
       forwardMotor();
       delay(3000);
       stopMotor();
+      strip.setPixelColor(0,0,0,0);
+      strip.show();
+      strip.setPixelColor(1,0,0,0);
+      strip.show();
     }
 
 
   if(command == "backward")
     {
+      strip.setPixelColor(0,0,255,0);//first LED
+      strip.show();
+      strip.setPixelColor(1,0,255,0);//second LED
+      strip.show();
       backwardMotor();
       delay(3000);
       stopMotor();
+      strip.setPixelColor(0,0,0,0);
+      strip.show();
+      strip.setPixelColor(1,0,0,0);
+      strip.show();
     }
     
 
   if(command == "left")
     {
+      strip.setPixelColor(0, 0, 0, 0);//first LED, g,r,b
+      strip.show();
+      strip.setPixelColor(1,255,0,0);//second LED
+      strip.show();
       turnLeft();
-      delay(1000);
+      delay(300);
       stopMotor();
+      strip.setPixelColor(0,0,0,0);
+      strip.show();
+      strip.setPixelColor(1,0,0,0);
+      strip.show();
     }
     
 
   if(command == "right")
     {
+      strip.setPixelColor(1,0,0,0);//second LED
+      strip.show();
+      strip.setPixelColor(0,255,0,0);//first LED
+      strip.show();
       turnRight();
-      delay(1000);
+      delay(300);
       stopMotor();
+      strip.setPixelColor(0,0,0,0);
+      strip.show();
+      strip.setPixelColor(1,0,0,0);
+      strip.show();
     }
 
    if(command == "stop")
     {
+      strip.setPixelColor(0,0,0,0);//first LED
+      strip.show();
+      strip.setPixelColor(1,0,0,0);//second LED
+      strip.show();
       stopMotor();
+    }
+
+    if(command == "arc right")
+    {
+      strip.setPixelColor(0,0,0,255);
+      strip.setPixelColor(1,0,0,0);
+      strip.show();
+      
     }
 
   sendBackEcho(command);
