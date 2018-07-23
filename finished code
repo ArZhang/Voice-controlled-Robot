@@ -1,0 +1,307 @@
+//#include<Windows.h>
+
+#include <Adafruit_NeoPixel.h>
+
+      #define PIN 4
+
+int rightMotor2;
+int rightMotor1;
+int leftMotor2;
+int leftMotor1;
+//int eneLeftMotor;
+//int eneRightMotor;
+//int buttonPin = 16;//D0
+String command="";
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(2, PIN, NEO_GRB + NEO_KHZ800);
+
+#include <ESP8266WiFi.h>
+WiFiClient client;
+WiFiServer server(80);
+const char* ssid = "hotspot";
+const char* password = "12345678";
+//const char* ssid = "iPhone";
+//const char* password = "22f72QU7";
+//const char* host = "wifitest.adafruit.com";
+
+void setup() {
+  // put your setup code here, to run once:
+  rightMotor2 = 0;//D7 right motor -
+  rightMotor1 = 2; //D8 right motor +
+  leftMotor2 = 14; //D3 left motor -
+  leftMotor1 = 13; //D4 left motor +
+
+  String command="";
+  //eneLeftMotor = 12;//enable left motor
+  //eneRightMotor = 14;//enable right motor
+
+
+  Serial.begin(115200);
+  //pinMode(buttonPin, INPUT_PULLUP);
+  //pinMode(eneLeftMotor, OUTPUT); 
+  //pinMode(eneRightMotor, OUTPUT); 
+  pinMode(leftMotor1, OUTPUT); 
+  pinMode(leftMotor2, OUTPUT);  
+  pinMode(rightMotor1, OUTPUT);  
+  pinMode(rightMotor2, OUTPUT);  
+  //digitalWrite(eneLeftMotor,LOW);
+  //digitalWrite(eneRightMotor,LOW);
+  digitalWrite(leftMotor1,LOW);
+  digitalWrite(leftMotor2,LOW);
+  digitalWrite(rightMotor1,LOW);
+  digitalWrite(rightMotor2,LOW);
+
+  strip.begin();
+  //strip.setPixelColor(0,0,0,0);
+  //strip.setPixelColor(0,0,0,0);
+  strip.show(); // Initialize all pixels to 'off'
+  //strip.setBrightness(32);
+  
+//  while (digitalRead(buttonPin))  // Wait for button to be pressed to move on 
+  //{  
+  //}
+
+  Serial.begin(115200);
+  connectWiFi();
+  server.begin();  
+
+  
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  //call the function, delay, then turn enable engines to LOW
+      
+  client = server.available();
+    if (!client) return; 
+    command = checkClient ();
+
+  
+  if(command == "forward")
+    {
+      strip.setPixelColor(0,255,0,0);//first LED
+      strip.show();
+      strip.setPixelColor(1,255,0,0);//second LED
+      strip.show();
+      forwardMotor();
+      delay(3000);
+      stopMotor();
+      strip.setPixelColor(0,0,0,0);
+      strip.show();
+      strip.setPixelColor(1,0,0,0);
+      strip.show();
+    }
+
+
+  if(command == "backward")
+    {
+      strip.setPixelColor(0,0,255,0);//first LED
+      strip.show();
+      strip.setPixelColor(1,0,255,0);//second LED
+      strip.show();
+      backwardMotor();
+      delay(3000);
+      stopMotor();
+      strip.setPixelColor(0,0,0,0);
+      strip.show();
+      strip.setPixelColor(1,0,0,0);
+      strip.show();
+    }
+    
+
+  if(command == "left")
+    {
+      strip.setPixelColor(0, 0, 0, 0);//first LED, g,r,b
+      strip.show();
+      strip.setPixelColor(1,255,0,0);//second LED
+      strip.show();
+      turnLeft();
+      delay(300);
+      stopMotor();
+      strip.setPixelColor(0,0,0,0);
+      strip.show();
+      strip.setPixelColor(1,0,0,0);
+      strip.show();
+    }
+    
+
+  if(command == "right")
+    {
+      strip.setPixelColor(1,0,0,0);//second LED
+      strip.show();
+      strip.setPixelColor(0,255,0,0);//first LED
+      strip.show();
+      turnRight();
+      delay(300);
+      stopMotor();
+      strip.setPixelColor(0,0,0,0);
+      strip.show();
+      strip.setPixelColor(1,0,0,0);
+      strip.show();
+    }
+
+   if(command == "stop")
+    {
+      strip.setPixelColor(0,0,0,0);//first LED
+      strip.show();
+      strip.setPixelColor(1,0,0,0);//second LED
+      strip.show();
+      stopMotor();
+    }
+
+    if(command == "circle")
+    {
+      strip.setPixelColor(0,0,0,255);
+      strip.setPixelColor(1,0,0,0);
+      strip.show();
+      for(int i=0;i<160;i++)
+      {
+        forwardMotor();
+        delay(15);
+        turnRight(); 
+        delay(8);
+      }
+      stopMotor();
+      strip.setPixelColor(0,0,0,0);
+      strip.setPixelColor(1,0,0,0);
+      strip.show();
+    }
+
+  sendBackEcho(command);
+  command = "";
+}
+
+
+void forwardMotor(void)
+  {
+    //digitalWrite(eneLeftMotor,HIGH);
+    //digitalWrite(eneRightMotor, HIGH);
+  
+    digitalWrite(leftMotor1,HIGH);
+    digitalWrite(leftMotor2, LOW);
+    digitalWrite(rightMotor1,HIGH);
+    digitalWrite(rightMotor2, LOW);
+  }
+
+  void backwardMotor(void)
+  {
+    //digitalWrite(eneLeftMotor, HIGH);
+    //digitalWrite(eneRightMotor, HIGH);
+
+    digitalWrite(leftMotor1, LOW);
+    digitalWrite(leftMotor2, HIGH);
+    digitalWrite(rightMotor1, LOW);
+    digitalWrite(rightMotor2, HIGH);
+  }
+
+  void stopMotor(void)
+  {
+    digitalWrite(leftMotor1, LOW);
+    digitalWrite(leftMotor2, LOW);
+    digitalWrite(rightMotor1, LOW);
+    digitalWrite(rightMotor2, LOW);
+  }
+
+  void turnLeft(void)
+  {
+    //digitalWrite(eneLeftMotor, HIGH);
+    //digitalWrite(eneRightMotor, HIGH);
+
+    digitalWrite(leftMotor1, LOW);
+    digitalWrite(leftMotor2, HIGH);
+    digitalWrite(rightMotor1, HIGH);
+    digitalWrite(rightMotor2, LOW);
+  }
+
+  void turnRight(void)
+  {
+    //digitalWrite(eneLeftMotor, HIGH);
+    //digitalWrite(eneRightMotor, HIGH);
+
+    digitalWrite(leftMotor1, HIGH);
+    digitalWrite(leftMotor2, LOW);
+    digitalWrite(rightMotor1, LOW);
+    digitalWrite(rightMotor2, HIGH);
+  }
+
+
+
+/*void keyPressed()
+{
+  if(key == 37)
+  {
+    turnLeft();
+    delay(1000);
+    stopMotor();
+  }
+  
+  if(key == 38)
+  {
+    forwardMotor();
+  }
+
+  if(key == 39)
+  {
+    turnRight();
+    delay(1000);
+    stopMotor();
+  }
+
+  if(key == 40)
+  {
+    backwardMotor();
+  }
+
+  if(key == 32)
+  {
+    stopMotor();
+  }
+}*/
+
+
+  void connectWiFi()
+{
+  Serial.println("Connecting to WIFI");
+  WiFi.begin(ssid, password);
+  while ((!(WiFi.status() == WL_CONNECTED)))
+  {
+    delay(300);
+    Serial.print("..");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("Adafruit Huzzah IP is : ");
+  Serial.print((WiFi.localIP()));
+}
+/* check command received from Android Device */
+String checkClient (void)
+{
+  while(!client.available()) delay(1); 
+  String request = client.readStringUntil('\r');
+  request.remove(0, 5);
+  request.remove(request.length()-9,9);
+  return request;
+}
+
+/* send command echo back to android device */
+void sendBackEcho(String echo)
+{
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-Type: text/html");
+  client.println("");
+  client.println("<!DOCTYPE HTML>");
+  client.println("<html>");
+  client.println(echo);
+  client.println("</html>");
+  client.stop();
+  delay(1);
+}
+/*2d
+csum 0x2d
+v614f7c32
+~ld
+Connecting to WIFI
+......................
+WiFi connected
+NodeMCU Local IP is : 
+10.176.155.26*/
