@@ -18,10 +18,10 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(2, PIN, NEO_GRB + NEO_KHZ800);
 #include <ESP8266WiFi.h>
 WiFiClient client;
 WiFiServer server(80);
-const char* ssid = "hotspot";
-const char* password = "12345678";
-//const char* ssid = "iPhone";
-//const char* password = "22f72QU7";
+const char* ssid = "your ssid";
+const char* password = "your password";
+//const char* ssid = "";
+//const char* password = "";
 //const char* host = "wifitest.adafruit.com";
 
 void setup() {
